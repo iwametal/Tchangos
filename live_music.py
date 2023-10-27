@@ -1,9 +1,10 @@
 import os
+import yt_dlp
 
 
 class LiveMusic:
-	@staticmethod
-	def get_ydl_opts(filename):
+	@classmethod
+	def get_ydl_opts(self, filename):
 		return {
 			'format': 'bestaudio/best',
 			'postprocessors': [{
@@ -13,6 +14,15 @@ class LiveMusic:
 			}],
 			'outtmpl': f'song/{filename}.%(ext)s',
 		}
+
+
+	@staticmethod
+	def download_song(filename, music):
+		url = ''
+		with yt_dlp.YoutubeDL(LiveMusic.get_ydl_opts(filename)) as ydl:
+			ydl.extract_info(music, download=True)
+
+		return url
 
 
 	@staticmethod

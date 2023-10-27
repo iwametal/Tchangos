@@ -3,10 +3,8 @@ import discord
 from discord.ext import commands, tasks
 from Helper import Helper
 from live_music import LiveMusic
-import random
 from twitch_helper import TwitchHelper
 from twitchAPI.twitch import Twitch
-import yt_dlp
 
 ### ENV VARIABLES ###
 gen_data = Helper.get_general_env()
@@ -148,7 +146,7 @@ def run_discord_bot():
 
 			current_song['song'] = music
 
-			filename = str(random.randint(1, 100))
+			filename = Helper.create_unique_filename('song/')
 
 			ps = current_song['id']
 			current_song['id'] = filename + '.mp3'
@@ -158,11 +156,8 @@ def run_discord_bot():
 
 			Helper.set_json(CURRENT_SONG, current_song)
 
-			ydl_opts = LiveMusic.get_ydl_opts(filename)
-
-			with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-				ydl.extract_info(music, download=True)
-				url = 'song/' + str(current_song['id'])
+			LiveMusic.download_song(filename, music)
+			url = 'song/' + str(current_song['id'])
 
 			print(music)
 			print(url)

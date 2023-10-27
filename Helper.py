@@ -1,6 +1,7 @@
-# import os
 from dotenv import dotenv_values
 import json
+import os
+import random
 
 
 class Helper:
@@ -17,6 +18,16 @@ class Helper:
 			content = json.loads(file.read())
 
 		return content
+
+
+	@staticmethod
+	def create_unique_filename(path):
+		filename = str(random.randint(1, 100))
+
+		while os.path.exists(path + filename):
+			filename = str(random.randint(1, 100))
+
+		return filename
 
 
 	@staticmethod
