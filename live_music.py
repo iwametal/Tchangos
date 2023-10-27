@@ -27,6 +27,7 @@ class LiveMusic:
 
 	@staticmethod
 	def delete_song(song):
-		path = 'song/' + str(song)
-		if os.path.exists(path):
-			os.remove(path)
+		if song:
+			path = 'song/' + str(song)
+			if os.path.exists(path):
+				os.remove(path)

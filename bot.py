@@ -51,7 +51,6 @@ def create_embed_msg(eb_name, eb_value, eb_color, eb_title='', eb_desc='', eb_in
 
 def run_discord_bot():
 
-	# executes as soon as the bot is up
 	@bot.event
 	async def on_ready():
 		print("Tchangos up!")
@@ -121,7 +120,7 @@ def run_discord_bot():
 		if not music and len(current_song['song']) > 0:
 			counter = 0
 			try:
-				if voice_client and not voice_client.is_playing():
+				if voice_client and (not voice_client.is_playing() or voice_client.is_paused()):
 					LiveMusic.delete_song(current_song['id'])
 
 					current_song = {'song': '', 'id': ''}
@@ -145,19 +144,17 @@ def run_discord_bot():
 					voice_client = await voice.connect()
 			except Exception as e:
 				print(e)
-				if voice_client and voice_client.is_connected():
-					voice_client.disconnect()
 				voice_client = None
 
 			current_song['song'] = music
 
 			filename = Helper.create_unique_filename('song/')
 
-			ps = current_song['id']
+			old_song = current_song['id']
 			current_song['id'] = filename + '.mp3'
 
 			print(current_song)
-			print(ps)
+			print(old_song)
 
 			Helper.set_json(CURRENT_SONG, current_song)
 
@@ -167,13 +164,13 @@ def run_discord_bot():
 			print(music)
 			print(url)
 
-			if voice_client.is_playing():
+			if voice_client and voice_client.is_playing():
 				voice_client.stop()
-
-			LiveMusic.delete_song(ps)
 
 			print("PLAYING MUSIC")
 			voice_client.play(discord.FFmpegPCMAudio(url))
+
+			LiveMusic.delete_song(old_song)
 
 		elif (not music or music == current_song['song']) and voice_client and not voice_client.is_playing():
 			counter += 1
