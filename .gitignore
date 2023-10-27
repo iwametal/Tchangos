@@ -1,0 +1,12 @@
+# general project data
+data/
+
+# temporary files
+song/
+
+# environment variables
+.env
+
+# ongoing files
+help_cog.py
+music_cog.py

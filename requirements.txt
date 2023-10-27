@@ -1,0 +1,9 @@
+# PIP
+
+discord
+ffmpeg
+PyNaCl
+python-dotenv
+requests
+twitchAPI
+yt-dlp
