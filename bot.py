@@ -44,6 +44,11 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=">", bot=True, intents=intents)
 
 
+def create_embed_msg(eb_name, eb_value, eb_color, eb_title='', eb_desc='', eb_inline=False):
+	embed = discord.Embed(color=eb_color, title=eb_title, description=eb_desc)
+	embed.add_field(name=eb_name, value=eb_value, inline=eb_inline)
+
+
 def run_discord_bot():
 
 	# executes as soon as the bot is up
@@ -248,20 +253,20 @@ def run_discord_bot():
 				
 				partner_user = bot.get_user(int(partner.id))
 
-				embed = discord.Embed(color=discord.Colour.purple(), title="", description="")
-				embed.add_field(name="STREAM:", value=f"""
+				eb_value = f"""
 	**{partner_user}** foi adicionardo a lista de parceria com sucesso!
 
 	O server será notificado sempre que o streamer estiver em live pelo canal de divulgação: **<#{int(gen_data[CHANNEL_ID])}>**
-				""", inline=True)
+				"""
+				embed = create_embed_msg("STREAM:", eb_value, discord.Colour.purple(), eb_inline=True)
 
 			except Exception as e:
 				print(e)
 
-				embed = discord.Embed(color=discord.Colour.red(), title="", description="")
-				embed.add_field(name="ERRO:", value=f"""
+				eb_value = f"""
 	Não foi possível adicionar o usuário a lista de Streamers parceiros :c
-				""", inline=True)
+				"""
+				embed = create_embed_msg("ERRO:", eb_value, discord.Colour.red(), eb_inline=True)
 			
 			finally:
 				await ctx.send(embed=embed)
@@ -284,26 +289,26 @@ def run_discord_bot():
 					
 					partner_user = bot.get_user(int(partner.id))
 
-					embed = discord.Embed(color=discord.Colour.red(), title="", description="")
-					embed.add_field(name="STREAM:", value=f"""
+					eb_value = f"""
 		**{partner_user}** foi retirado da lista de parceria com sucesso!
-					""", inline=True)
+					"""
+					embed = create_embed_msg("STREAM", eb_value, discord.Colour.yellow(), eb_inline=True)
 
 				else:
 					partner_user = bot.get_user(int(partner.id))
 
-					embed = discord.Embed(color=discord.Colour.red(), title="", description="")
-					embed.add_field(name="STREAM:", value=f"""
+					eb_value = f"""
 		**{partner_user}** não foi encontrado na lista de parceiros!
-					""", inline=True)
+					"""
+					embed = create_embed_msg("STREAM:", eb_value, discord.Colour.red(), eb_inline=True)
 
 			except Exception as e:
 				print(e)
 
-				embed = discord.Embed(color=discord.Colour.red(), title="", description="")
-				embed.add_field(name="ERRO:", value=f"""
+				eb_value = f"""
 	Não foi possível retirar o usuário a lista de Streamers parceiros :c
-				""", inline=True)
+				"""
+				embed = create_embed_msg("ERRO:", eb_value, discord.Colour.red(), eb_inline=True)
 			
 			finally:
 				await ctx.send(embed=embed)
@@ -327,23 +332,23 @@ def run_discord_bot():
 
 				Helper.set_json(USER_WARNINGS, warnings)
 				
-				embed = discord.Embed(color=discord.Colour.orange(), title="", description="")
-				embed.add_field(name="WARN:", value=f"""
+				eb_value = f"""
 	Você recebeu um 'warning' no server do **{bot.get_guild(int(gen_data[GUILD_ID])).name}**
 
 	**Razão:**
 	> {reason}
-				""", inline=True)
+				"""
+				embed = create_embed_msg("WARN:", eb_value, discord.Colour.orange(), eb_inline=True)
 
 				await member.send(embed=embed)
 
 			except Exception as e:
 				print(e)
 
-				embed = discord.Embed(color=discord.Colour.red(), title="", description="")
-				embed.add_field(name="ERRO:", value=f"""
+				eb_value = f"""
 	Não foi possível realizar o warning para o usuário
-				""", inline=True)
+				"""
+				embed = create_embed_msg("ERRO:", eb_value, discord.Colour.red(), eb_inline=True)
 				await ctx.reply(embed=embed)
 
 		elif ctx.guild.id == int(gen_data[COFFEE_GUILD_ID]):
@@ -359,28 +364,30 @@ def run_discord_bot():
 
 				warnings = Helper.get_json(USER_WARNINGS)
 
+				eb_value = ''
 				if str_id in warnings:
 					warning_list = ''
 
 					for id, warn in enumerate(warnings[str_id]):
 						warning_list += '\n\n**' + str(id + 1) + ')** ' + warn
 					
-					embed = discord.Embed(color=discord.Colour.yellow(), title="", description="")
-					embed.add_field(name="WARNINGS:", value=f"""
+					eb_value = f"""
 	> {warning_list}
-					""")
+					"""
 
 				else:
-					embed = discord.Embed(color=discord.Colour.yellow(), title="", description="")
-					embed.add_field(name="WARNINGS:", value=f"""
+					eb_value = f"""
 	> O usuário não possui nenhum 'warning'
-					""")
+					"""
+
+				embed = create_embed_msg("WARNINGS:", eb_value, discord.Colour.yellow())
+
 			except Exception as e:
 				print(e)
-				embed = discord.Embed(color=discord.Colour.red(), title="", description="")
-				embed.add_field(name="ERRO:", value=f"""
+				eb_value = f"""
 	> Não foi listar os warnings para o usuário
-				""", inline=True)
+				"""
+				embed = create_embed_msg("ERRO:", eb_value, discord.Colour.red(), eb_inline=True)
 
 			finally:
 				await ctx.reply(embed=embed)
@@ -396,6 +403,7 @@ def run_discord_bot():
 				str_id = str(member.id)
 				warnings = Helper.get_json(USER_WARNINGS)
 
+				eb_value = ''
 				if str_id in warnings:
 					warn = warnings[str_id][int(id)-1]
 					warnings[str_id].remove(warn)
@@ -405,23 +413,23 @@ def run_discord_bot():
 
 					Helper.set_json(USER_WARNINGS, warnings)
 
-					embed = discord.Embed(color=discord.Colour.dark_blue(), title="", description="")
-					embed.add_field(name="UNWARN:", value=f"""
+					eb_value = f"""
 	Warn *'{warn}'* removido para o usuário **{member}**
-					""")
+					"""
 				
 				else:
-					embed = discord.Embed(color=discord.Colour.dark_blue(), title="", description="")
-					embed.add_field(name="UNWARN:", value=f"""
+					eb_value = f"""
 	O usuário **{member}** não possui nenhum warning!
-					""")
+					"""
+
+				embed = create_embed_msg("UNWARN:", eb_value, discord.Colour.dark_blue())
 			
 			except Exception as e:
 				print(e)
-				embed = discord.Embed(color=discord.Colour.red(), title="", description="")
-				embed.add_field(name="ERRO:", value=f"""
+				eb_value = f"""
 Não foi possível remover o warning para o usuário
-				""")
+				"""
+				embed = create_embed_msg("ERRO:", eb_value, discord.Colour.red())
 			
 			finally:
 				await ctx.send(embed=embed)
