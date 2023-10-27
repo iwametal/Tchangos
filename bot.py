@@ -2,7 +2,6 @@ import asyncio
 import discord
 from discord.ext import commands, tasks
 from Helper import Helper
-import json
 from live_music import LiveMusic
 import random
 from twitch_helper import TwitchHelper
@@ -23,6 +22,7 @@ MUSIC_CHANNEL_ID="MUSIC_CHANNEL_ID"
 VOICE_ID="VOICE_ID"
 
 ### DATA FILES ###
+CURRENT_SONG = 'data/current_song.json'
 TWITCH_PARTNERS = 'data/streamers.json'
 USER_WARNINGS = 'data/warnings.json'
 
@@ -60,8 +60,7 @@ def run_discord_bot():
 	"""
 	@tasks.loop(seconds=10)
 	async def live_notifs_loop():
-		with open(TWITCH_PARTNERS, 'r') as file:
-			streamers = json.loads(file.read())
+		streamers = Helper.get_json(TWITCH_PARTNERS)
 		if streamers is not None:
 			for user_id, twitch_name in streamers.items():
 
@@ -94,7 +93,7 @@ def run_discord_bot():
 
 		music = ''
 
-		current_song = LiveMusic.get_song_json()
+		current_song = Helper.get_json(CURRENT_SONG)
 
 		await channel.send("!tocando")
 
@@ -123,7 +122,7 @@ def run_discord_bot():
 					LiveMusic.delete_song(current_song['id'])
 
 					current_song = {'song': '', 'id': ''}
-					LiveMusic.set_song_json(current_song)
+					Helper.set_json(CURRENT_SONG, current_song)
 			except Exception as e:
 				print(e)
 				if voice_client and voice_client.is_connected():
@@ -133,7 +132,7 @@ def run_discord_bot():
 				LiveMusic.delete_song(current_song['id'])
 
 				current_song = {'song': '', 'id': ''}
-				LiveMusic.set_song_json(current_song)
+				Helper.set_json(CURRENT_SONG, current_song)
 
 
 		elif music != current_song['song']:
@@ -157,7 +156,7 @@ def run_discord_bot():
 			print(current_song)
 			print(ps)
 
-			LiveMusic.set_song_json(current_song)
+			Helper.set_json(CURRENT_SONG, current_song)
 
 			ydl_opts = LiveMusic.get_ydl_opts(filename)
 
@@ -246,13 +245,11 @@ def run_discord_bot():
 	async def add_twitch(ctx, partner: discord.Member, twitch_name):
 		if ctx.guild.id == int(gen_data[GUILD_ID]):
 			try:
-				with open(TWITCH_PARTNERS, 'r') as file:
-					streamers = json.loads(file.read())
+				streamers = Helper.get_json(TWITCH_PARTNERS)
 				
 				streamers[str(partner.id)] = twitch_name
 				
-				with open(TWITCH_PARTNERS, 'w') as file:
-					file.write(json.dumps(streamers))
+				Helper.set_json(TWITCH_PARTNERS, streamers)
 				
 				partner_user = bot.get_user(int(partner.id))
 
@@ -283,14 +280,12 @@ def run_discord_bot():
 	async def rm_twitch(ctx, partner: discord.Member):
 		if ctx.guild.id == int(gen_data[GUILD_ID]):
 			try:
-				with open(TWITCH_PARTNERS, 'r') as file:
-					streamers = json.loads(file.read())
+				streamers = Helper.get_json(TWITCH_PARTNERS)
 				
 				if streamers and partner.id and streamers.get(str(partner.id)):
 					streamers.pop(str(partner.id))
 				
-					with open(TWITCH_PARTNERS, 'w') as file:
-						file.write(json.dumps(streamers))
+					Helper.set_json(TWITCH_PARTNERS, streamers)
 					
 					partner_user = bot.get_user(int(partner.id))
 
@@ -328,16 +323,14 @@ def run_discord_bot():
 		if ctx.guild.id == int(gen_data[GUILD_ID]):
 			try:
 				str_id = str(member.id)
-				with open(USER_WARNINGS, 'r') as file:
-					warnings = json.loads(file.read())
+				warnings = Helper.get_json(USER_WARNINGS)
 				
 				if str_id in warnings:
 					warnings[str_id].append(reason)
 				else:
 					warnings[str_id] = [reason]
 
-				with open(USER_WARNINGS, 'w') as file:
-					file.write(json.dumps(warnings))
+				Helper.set_json(USER_WARNINGS, warnings)
 				
 				embed = discord.Embed(color=discord.Colour.orange(), title="", description="")
 				embed.add_field(name="WARN:", value=f"""
@@ -369,8 +362,7 @@ def run_discord_bot():
 			try:
 				str_id = str(member.id)
 
-				with open(USER_WARNINGS, 'r') as file:
-					warnings = json.loads(file.read())
+				warnings = Helper.get_json(USER_WARNINGS)
 
 				if str_id in warnings:
 					warning_list = ''
@@ -407,8 +399,7 @@ def run_discord_bot():
 		if ctx.guild.id == int(gen_data[GUILD_ID]):
 			try:
 				str_id = str(member.id)
-				with open(USER_WARNINGS, 'r') as file:
-					warnings = json.loads(file.read())
+				warnings = Helper.get_json(USER_WARNINGS)
 
 				if str_id in warnings:
 					warn = warnings[str_id][int(id)-1]
@@ -417,8 +408,7 @@ def run_discord_bot():
 					if len(warnings[str_id]) == 0:
 						warnings.pop(str_id)
 
-					with open(USER_WARNINGS, 'w') as file:
-						file.write(json.dumps(warnings))
+					Helper.set_json(USER_WARNINGS, warnings)
 
 					embed = discord.Embed(color=discord.Colour.dark_blue(), title="", description="")
 					embed.add_field(name="UNWARN:", value=f"""
