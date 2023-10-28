@@ -167,18 +167,19 @@ def run_discord_bot():
 			if voice_client and voice_client.is_playing():
 				voice_client.stop()
 
-			print("PLAYING MUSIC")
 			voice_client.play(discord.FFmpegPCMAudio(url))
+			print("PLAYING MUSIC")
 
 			LiveMusic.delete_song(old_song)
 
-		elif (not music or music == current_song['song']) and voice_client and not voice_client.is_playing():
+		elif (not music or music == current_song['song']) and voice_client and (not voice_client.is_playing() or voice_client.is_paused()):
 			counter += 1
 
 			if counter > 6:
 				counter = 0
 				try:
-					await voice_client.disconnect()
+					if voice_client.is_connected():
+						await voice_client.disconnect()
 					voice_client = None
 					print("Innactivity")
 				except Exception as e:
