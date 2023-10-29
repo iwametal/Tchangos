@@ -29,7 +29,6 @@ counter = 0
 
 twitch = Twitch(gen_data[CLIENT_ID], gen_data[CLIENT_SECRET])
 twitch.authenticate_app([])
-TWITCH_STREAM_API_ENDPOINT_V5 = "https://api.twitch.tv/helix/streams?user_login={}"
 
 API_HEADERS = {
 	'Client-ID': gen_data[CLIENT_ID],
