@@ -47,6 +47,8 @@ def create_embed_msg(eb_name, eb_value, eb_color, eb_title='', eb_desc='', eb_in
 	embed = discord.Embed(color=eb_color, title=eb_title, description=eb_desc)
 	embed.add_field(name=eb_name, value=eb_value, inline=eb_inline)
 
+	return embed
+
 
 def run_discord_bot():
 
@@ -187,7 +189,7 @@ def run_discord_bot():
 
 
 	@bot.command()
-	@commands.has_permissions(administrator=True)
+	@commands.check_any(commands.has_role("ADM"), commands.has_permissions(administrator=True))
 	async def play(ctx):
 		
 		if ctx.guild.id == int(gen_data[GUILD_ID]):
@@ -197,7 +199,7 @@ def run_discord_bot():
 
 
 	@bot.command()
-	@commands.has_permissions(administrator=True)
+	@commands.check_any(commands.has_role("ADM"), commands.has_permissions(administrator=True))
 	async def stop(ctx):
 		
 		if ctx.guild.id == int(gen_data[GUILD_ID]):
