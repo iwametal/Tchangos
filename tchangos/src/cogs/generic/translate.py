@@ -1,5 +1,3 @@
-import discord
-
 from constants import TRANSLATE_FLAGS
 from discord.ext import commands
 from googletrans import Translator
