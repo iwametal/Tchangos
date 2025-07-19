@@ -19,6 +19,7 @@ intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 intents.messages = True
+intents.reactions = True
 
 
 class TchangosBot(commands.Bot):
@@ -60,9 +61,9 @@ class TchangosBot(commands.Bot):
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send(f"🚫 Sem permissões, noob. {error}")
+            await ctx.send(f"🚫 | Sem permissões, noob. {error}")
         elif isinstance(error, commands.CheckFailure):
-            await ctx.send(f"❌ Check Failure. {error}")
+            await ctx.send(f"❌ | Check Failure. {error}")
         elif isinstance(error, commands.CommandNotFound):
             pass
         else:

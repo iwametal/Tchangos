@@ -8,6 +8,27 @@ DISCORD_PARTNERS_CHANNEL_ID=1103829529811759205
 DISCORD_MUSIC_CHANNEL_ID=964458695415177286
 DISCORD_VOICE_ID=964387012339724330
 
+TRANSLATE_FLAGS = {
+	"🇧🇷": 'pt',
+	"🇵🇹": 'pt',
+    "🇯🇵": 'jp',
+    "🎌": 'jp',
+    "🇰🇷": 'ko',
+    "🇰🇵": 'ko',
+    "🇨🇳": 'zh-tw',
+    "🇨🇦": 'en',
+    "🇬🇧": 'en',
+    "🇺🇸": 'en',
+    "🇫🇷": 'fr',
+    "🇩🇪": 'de',
+    "🇷🇺": 'ru',
+    "🇮🇹": 'it',
+    "🇲🇽": 'es',
+    "🇦🇷": 'es',
+    "🇪🇸": 'es',
+    "🇮🇪": 'hi',
+}
+
 
 ###
 
