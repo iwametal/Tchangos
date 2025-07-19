@@ -96,7 +96,7 @@ class Generic(commands.Cog):
 				print(e)
 
 			try:
-				kickdm = discord.Embed(title=f"<:1257155615365664829:> | Kickado!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
+				kickdm = discord.Embed(title=f"<:hammer:> | Kickado!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
 				await member.send(embed=kickdm)
 			except Exception as e:
 				print(e)
