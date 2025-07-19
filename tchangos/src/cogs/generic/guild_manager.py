@@ -18,9 +18,7 @@ class GuildManager(commands.Cog):
 			# overwrite.add_reactions = False
 
 			await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
-			await ctx.send(f'Channel {channel.name} has been locked!')
-		else:
-			await ctx.send('You do not have permission to lock this channel, beesh :robot:')
+			await ctx.send(f'Canal {channel.name} lockeado!')
 	
 
 	@commands.command(name="unlock", aliases=["Unlock"])
@@ -34,9 +32,7 @@ class GuildManager(commands.Cog):
 			# overwrite.add_reactions = True
 
 			await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
-			await ctx.send(f'Channel {channel.name} has been unlocked!')
-		else:
-			await ctx.send('You do not have permission to unlock this channel, beesh :robot:')
+			await ctx.send(f'Canal {channel.name} liberado!')
 
 
 async def setup(bot):
