@@ -93,7 +93,7 @@ class Partners(commands.Cog):
 						print(f"{user} started streaming. Sending notification")
 						await self.bot.get_channel(int(DISCORD_PARTNERS_CHANNEL_ID)).send(
 							f":red_circle: **LIVE\n** {self.bot.ftl.extract('partners-started-streaming-message', user=f'{user.mention}')}!\n"
-							f"\nhttps://www.twitch.tv/{twitch_name}",
+							f" https://www.twitch.tv/{twitch_name}",
 							allowed_mentions=discord.AllowedMentions(users=False)
 						)
 				else:
@@ -151,9 +151,12 @@ class Partners(commands.Cog):
 	async def rm_twitch_partner(self, ctx, partner: discord.Member):
 		partner_user = ""
 		try:
+			partner_id = str(partner.id)
 			streamers = Helper.get_json(TWITCH_PARTNERS)
-			if streamers and partner.id and streamers.get(str(partner.id)):
-				streamers.pop(str(partner.id))
+			if streamers and partner.id and streamers.get(partner_id):
+				if partner_id in self.streamers_online:
+					self.streamers_online.remove(partner_id)
+				streamers.pop(partner_id)
 				Helper.set_json(TWITCH_PARTNERS, streamers)
 				partner_user = self.bot.get_user(int(partner.id))
 

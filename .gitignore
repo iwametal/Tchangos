@@ -1,5 +1,7 @@
 config.ini
 .env
 
+info.iwa
+
 __pycache__/
 .vscode/
