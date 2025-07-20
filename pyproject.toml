@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "bb1nho-bot"
+name = "Tchangos"
 version = "0.1.0"
 description = ""
 authors = ["iwametal <od.leonardo01@gmail.com>"]
 readme = "README.md"
-packages = [{include = "bb1nho_bot"}]
+# packages = [{include = "Tchangos"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
