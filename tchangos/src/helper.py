@@ -4,6 +4,11 @@ import json
 import os
 import random
 
+from constants import FTL_PATH
+from fluent.runtime import FluentResource, FluentBundle
+from fluent.runtime.errors import FluentFormatError
+from pathlib import Path
+
 
 class Helper:
 
@@ -43,3 +48,46 @@ class Helper:
     def set_json(path, content):
         with open(path, 'w', encoding='utf-8') as file:
             file.write(json.dumps(content))
+
+
+class FTLExtractor:
+
+    def __init__(self, locale='pt', fallback_locale='pt'):
+        self.locale = locale
+        self.fallback_locale = fallback_locale
+        self.bundle = self.load_bundle(locale)
+
+        if locale != fallback_locale:
+            self.fallback_bundle = self.load_bundle(fallback_locale)
+        else:
+            self.fallback_bundle = self.bundle
+
+
+    def load_bundle(self, locale):
+        print("Loading bundles...")
+        bundle = FluentBundle([locale])
+        base_dir = Path(FTL_PATH.format(locale))
+
+        if not base_dir.exists():
+            return bundle
+
+        print("Loading ftl files...")
+        for ftl_file in base_dir.glob("*.ftl"):
+            content = ftl_file.read_text(encoding="utf-8")
+            resource = FluentResource(content)
+            bundle.add_resource(resource)
+            print(f"Bundle {ftl_file} loaded.")
+        return bundle
+
+
+    def extract(self, key, **kwargs):
+        bundle = self.bundle
+        msg = bundle.get_message(key)
+        if msg and msg.value:
+            return bundle.format_pattern(msg.value, kwargs)[0]
+
+        fallback = self.fallback_bundle.get_message(key)
+        if fallback and fallback.value:
+            return self.fallback_bundle.format_pattern(fallback.value, kwargs)[0]
+
+        return f"[Missing translation: {key}]"

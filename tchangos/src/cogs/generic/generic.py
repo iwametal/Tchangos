@@ -22,11 +22,12 @@ class Generic(commands.Cog):
 	async def ban(self, ctx, member: discord.Member, *, reason=None):
 		# Check if the author of the command has permission to ban members
 		if not ctx.author.guild_permissions.ban_members:
-			await ctx.send(":point_up::nerd: Te falta poder, noob")
+			await ctx.send(f":point_up::nerd: {self.bot.ftl.extract('missing-permissions')}")
 			
 		else:
-			ban = discord.Embed(title=f"<:aham:978415635203756132> | {member.name} banido!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
-			await ctx.message.delete()      
+			ban_msg  = self.bot.ftl.extract('generic-member-banned-message', member=member.name)
+			ban = discord.Embed(title=f"<:aham:978415635203756132> | {ban_msg}!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
+			await ctx.message.delete()
 			await ctx.channel.send(embed=ban)
 
 			bandm = ""
@@ -37,7 +38,8 @@ class Generic(commands.Cog):
 				print(e)
 
 			try:
-				bandm = discord.Embed(title=f"<:aham:978415635203756132> | You were Banned!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
+				ban_msg = self.bot.ftl.extractor('generic-member-banned-dm-message')
+				bandm = discord.Embed(title=f"<:aham:978415635203756132> | {ban_msg}!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
 				await member.send(embed=bandm)
 			except Exception as e:
 				print(e)
@@ -57,11 +59,13 @@ class Generic(commands.Cog):
 	async def unban(self, ctx, user: discord.User, *, reason="***No reason provided.***"):
 		# Check if the author of the command has permission to ban members
 		if not ctx.author.guild_permissions.ban_members:
-			await ctx.send("Te falta poder, nerd. :nerd:")
+			await ctx.send(f":point_up::nerd: {self.bot.ftl.extract('missing-permissions')}")
 		
 		else:
-			unban_embed = discord.Embed(title=f"<:aham:978415635203756132> | Desbanido {user.name}!", description=f"Reason: {reason}\nBy: {ctx.author.mention}", color=discord.Color.green())
-			not_banned_embed = discord.Embed(title=f"<:aham:978415635203756132> | {user.name} não está banido!", color=discord.Color.teal())
+			unban_msg = self.bot.ftl.extract('generic-member-unbanned-message', member=user.name)
+			not_banned_msg = self.bot.ftl.extract('generic-member-is-not-banned-message', member=user.name) 
+			unban_embed = discord.Embed(title=f"<:aham:978415635203756132> | {unban_msg}!", description=f"Reason: {reason}\nBy: {ctx.author.mention}", color=discord.Color.green())
+			not_banned_embed = discord.Embed(title=f"<:aham:978415635203756132> | {not_banned_msg}!", color=discord.Color.teal())
 			
 			try:
 				# Attempt to fetch the ban entry
@@ -83,20 +87,21 @@ class Generic(commands.Cog):
 	# @commands.has_permissions(kick_members=True)
 	async def kick(self, ctx, member: discord.Member, *, reason=None):
 		if not ctx.author.guild_permissions.kick_members:
-			await ctx.send("Te falta poder, nerd. :nerd:")
+			await ctx.send(f":point_up::nerd: {self.bot.ftl.extract('missing-permissions')}")
 		else:
-			kick = discord.Embed(title=f"<:hammer:> | {member.name} kickado!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
+			kick_msg = self.bot.ftl.extract('generic-member-kicked-message', member=member.name)
+			kick = discord.Embed(title=f"<:hammer:> | {kick_msg}!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
 			await ctx.message.delete()
 			await ctx.channel.send(embed=kick)
 
-			kickdm = ""
 			try:
 				await member.kick(reason=reason)
 			except Exception as e:
 				print(e)
 
 			try:
-				kickdm = discord.Embed(title=f"<:hammer:> | Kickado!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
+				kickdm_msg = self.bot.ftl.extract('generic-member-kicked-dm-message')
+				kickdm = discord.Embed(title=f"<:hammer:> | {kickdm_msg}!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
 				await member.send(embed=kickdm)
 			except Exception as e:
 				print(e)
@@ -107,8 +112,8 @@ class Generic(commands.Cog):
 	@commands.command(name="clear", aliases=["Clear", "Purge", "purge"])
 	@commands.guild_only()
 	@commands.has_permissions(manage_messages=True)
-	async def clear(self, ctx, amount: int = 5):
-		message = await ctx.send(f"**:put_litter_in_its_place: | {amount} mensagens deletadas em <#{ctx.channel.id}>!**")
+	async def purge(self, ctx, amount: int = 5):
+		message = await ctx.send(f"**:put_litter_in_its_place: | {self.bot.ftl.extract('generic-purge-message', amount=amount, channel_id=ctx.channel.id)}!**")
 		await ctx.channel.purge(limit=amount+2)
 		await message.delete(delay=5)
 

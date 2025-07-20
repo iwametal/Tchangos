@@ -18,7 +18,12 @@ class GuildManager(commands.Cog):
 			# overwrite.add_reactions = False
 
 			await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
-			await ctx.send(f'Canal {channel.name} lockeado!')
+
+			try:
+				await ctx.message.add_reaction('✅')
+			except Exception:
+				lock_msg = self.bot.ftl.extract('guild-manager-lock-channel-message', channel=channel.name)
+				await ctx.send(f'{lock_msg}!')
 	
 
 	@commands.command(name="unlock", aliases=["Unlock"])
@@ -32,7 +37,12 @@ class GuildManager(commands.Cog):
 			# overwrite.add_reactions = True
 
 			await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
-			await ctx.send(f'Canal {channel.name} liberado!')
+
+			try:
+				await ctx.message.add_reaction('✅')
+			except Exception:
+				unlock_msg = self.bot.ftl.extract('guild-manager-unlock-channel-message')
+				await ctx.send(f'{unlock_msg}!')
 
 
 async def setup(bot):

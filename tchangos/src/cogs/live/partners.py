@@ -5,9 +5,9 @@ import requests
 import time
 
 from discord.ext import commands, tasks
-from twitchAPI.chat import Chat, EventData, ChatMessage, ChatSub, ChatCommand
-from twitchAPI.oauth import UserAuthenticator
-from twitchAPI.type import AuthScope, ChatEvent
+# from twitchAPI.chat import Chat, EventData, ChatMessage, ChatSub, ChatCommand
+# from twitchAPI.oauth import UserAuthenticator
+# from twitchAPI.type import AuthScope, ChatEvent
 from twitchAPI.twitch import Twitch
 
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -92,8 +92,9 @@ class Partners(commands.Cog):
 
 						print(f"{user} started streaming. Sending notification")
 						await self.bot.get_channel(int(DISCORD_PARTNERS_CHANNEL_ID)).send(
-							f":red_circle: **LIVE\n**{user} tá on na Roxinha!\n"
-							f"\nhttps://www.twitch.tv/{twitch_name}"
+							f":red_circle: **LIVE\n** {self.bot.ftl.extract('partners-started-streaming-message', user=f'{user.mention}')}!\n"
+							f"\nhttps://www.twitch.tv/{twitch_name}",
+							allowed_mentions=discord.AllowedMentions(users=False)
 						)
 				else:
 					if user_id in self.streamers_online:
@@ -139,11 +140,10 @@ class Partners(commands.Cog):
 			Helper.set_json(TWITCH_PARTNERS, streamers)
 			partner_user = self.bot.get_user(int(partner.id))
 
-			await ctx.send(f"{partner_user} adicionado a lista de parceiros com sucesso.")
+			await ctx.send(f"{self.bot.ftl.extract('partners-partner-successfully-added', partner=partner_user.name)}")
 		except Exception as e:
 			print(e)
-
-			await ctx.send(f"Não foi possível adicionar {partner_user} à lista de parceiros.")
+			await ctx.send(f"{self.bot.ftl.extract('partners-partner-could-not-be-added', parter=partner_user.name)}")
 
 
 	@commands.command(name="rmparceiro", aliases=["Rmparceiro", "rmp", "Rmp"])
@@ -157,16 +157,15 @@ class Partners(commands.Cog):
 				Helper.set_json(TWITCH_PARTNERS, streamers)
 				partner_user = self.bot.get_user(int(partner.id))
 
-				await ctx.send(f"{partner_user} removido com sucesso da lista de streamers parceiros.")
+				await ctx.send(f"{self.bot.ftl.extract('partners-partner-successfully-removed', partner=partner_user.name)}")
 			else:
 				partner_user = self.bot.get_user(int(partner.id))
 
-				await ctx.send(f"{partner_user} não foi encontrado na lista de streamers parceiros.")
+				await ctx.send(f"{self.bot.ftl.extract('partners-partner-could-not-be-found', partner=partner_user.name)}")
 		except Exception as e:
 			print(e)
 
-			await ctx.send(f"Não foi possível remover {partner_user} da lista de parceiros.")
-			await ctx.send(f"{e}")
+			await ctx.send(f"{self.bot.ftl.extract('partners-partner-could-not-be-removed', partner=partner_user.name)}")
 
 
 async def setup(bot):

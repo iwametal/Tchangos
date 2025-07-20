@@ -1,9 +1,8 @@
 import discord
-from twitchAPI.twitch import Twitch
 
 # from constants import channels, pokemon_data, rand_stats
 from discord.ext import commands
-from helper import Helper
+from helper import Helper, FTLExtractor
 
 
 ### ENV VARIABLES ###
@@ -26,6 +25,7 @@ class TchangosBot(commands.Bot):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.ftl = FTLExtractor(locale='pt', fallback_locale='pt')
 
         # GENAI KEY
         self.genai_key = gen_data['GENAI']['KEY']
@@ -60,13 +60,20 @@ class TchangosBot(commands.Bot):
     
 
     async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            await ctx.send(f"🚫 | Sem permissões, noob. {error}")
-        elif isinstance(error, commands.CheckFailure):
-            await ctx.send(f"❌ | Check Failure. {error}")
-        elif isinstance(error, commands.CommandNotFound):
+        if isinstance(error, commands.CommandNotFound):
             pass
+        elif isinstance(error, commands.MissingPermissions):
+            await ctx.send(f"🚫 | {self.ftl.extract('missing-permissions', error=str(error))}")
+            print(f"🚫 Falta de permissoes:\n`{str(error)}`")
+            # await ctx.send(f" | Sem permissões, noob. {error}")
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send(f"❌ | {self.ftl.extract('check-failure', error=str(error))}")
+            print(f"❌ Erro de checagem:\n`{str(error)}`")
+            # await ctx.send(f" | Check Failure. {error}")
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(f"⚠️ | {self.ftl.extract('missing-required-argument')}. {error}")
         else:
+            await ctx.send(f"️️⚠️ | {self.ftl.extract('unexpected-error', error=str(error))}")
             print(f"⚠️ Erro inesperado:\n`{str(error)}`")
 
 

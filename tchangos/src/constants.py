@@ -1,5 +1,3 @@
-from helper import Helper
-
 TWITCH_PARTNERS = 'tchangos/src/data/streamers.json'
 
 DISCORD_COFFEE_GUILD_ID=821140045586497546
@@ -28,6 +26,8 @@ TRANSLATE_FLAGS = {
     "🇪🇸": 'es',
     "🇮🇪": 'hi',
 }
+
+FTL_PATH = "locale/{}"
 
 
 ###

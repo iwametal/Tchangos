@@ -1,0 +1,1 @@
+translate-unnable-to-translate-message = Não foi possível traduzir a mesagem.

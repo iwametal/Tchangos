@@ -26,9 +26,8 @@ class Translate(commands.Cog):
 				await message.channel.send(f"-# {message.content}\n> {trans_msg.text}")
 			except Exception as e:
 				print(e)
-				await message.channel.send("❌ | Não foi possível traduzir a mesagem.")
-		else:
-			print('not in translate flags')
+				translate_error_msg = self.bot.ftl.extract('translate-unnable-to-translate-message')
+				await message.channel.send(f"❌ | {translate_error_msg}")
 	
 
 	@commands.command(name="translate", aliases=["Translate"])
@@ -40,7 +39,8 @@ class Translate(commands.Cog):
 			await ctx.send(f"-# {message}\n> {trans_msg.text}")
 		except Exception as e:
 			print(e)
-			await ctx.send("❌ | Não foi possível traduzir a mesagem.")
+			translate_error_msg = self.bot.ftl.extract('translate-unnable-to-translate-message')
+			await message.channel.send(f"❌ | {translate_error_msg}")
 
 
 async def setup(bot):

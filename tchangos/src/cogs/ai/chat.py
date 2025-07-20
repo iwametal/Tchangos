@@ -16,11 +16,11 @@ class Chat(commands.Cog):
 	@commands.guild_only()
 	async def chat(self, ctx, *, prompt: str):
 		if not prompt:
-			await ctx.send("Preciso de um prompt para gerar uma resposta.")
+			await ctx.send(self.bot.ftl.extract('ai-missing-prompt'))
 			return
 		
 		if not (len(prompt) > 5 and (any(char.isalpha() for char in prompt))):
-			await ctx.send("O prompt passado é muito curto ou não contém um texto lógico.")
+			await ctx.send(self.bot.ftl.extract('ai-prompt-too-short-or-no-text'))
 			return
 
 		if len(self._chat.history) > self.MAX_HISTORY_LENGTH:
