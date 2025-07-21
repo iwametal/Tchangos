@@ -1,19 +1,12 @@
 import discord
-# import os
 import requests
-# import sys
 import time
 
-from discord.ext import commands, tasks
-# from twitchAPI.chat import Chat, EventData, ChatMessage, ChatSub, ChatCommand
-# from twitchAPI.oauth import UserAuthenticator
-# from twitchAPI.type import AuthScope, ChatEvent
-from twitchAPI.twitch import Twitch
-
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
 from constants import DISCORD_PARTNERS_CHANNEL_ID, TWITCH_PARTNERS
+from discord.ext import commands, tasks
 from helper import Helper
+from mongo.collections.services.partners_service import PartnersService
+from twitchAPI.twitch import Twitch
 
 
 class Partners(commands.Cog):
@@ -21,21 +14,24 @@ class Partners(commands.Cog):
 		self.bot = bot
 
 		self.TWITCH_STREAM_API_ENDPOINT_V5 = 'https://api.twitch.tv/helix/streams?user_login={}'
-		self.streamers_online = []
 		self.authenticated = False
 
+		self.__partners = PartnersService(self.bot._mongodb)
+		self.partners_list = self.__partners.get_partners()
+		self.streamers_online = []
 
-	async def _authenticate(self):
+
+	async def __authenticate(self):
 		try:
 			twitch = await Twitch(self.bot.twitch_client, self.bot.twitch_secret)
 			await twitch.authenticate_app([])
 
 			self.authenticated = True
-		except Exception as e:
+		except Exception:
 			self.bot.logger.exception('Unable to authenticate to twitch')
 	
 
-	def get_token(self):
+	def __get_token(self):
 		params = {
 			'client_id': self.bot.twitch_client,
             'client_secret': self.bot.twitch_secret,
@@ -50,13 +46,13 @@ class Partners(commands.Cog):
 		self.expires_at = time.time() + data['expires_in'] - 60
 
 
-	def _check_user(self, user):
+	def __check_user(self, user):
 		req = requests.Session()
 		url = self.TWITCH_STREAM_API_ENDPOINT_V5.format(user)
 		try:
 
 			if not self.bot.twitch_token or time.time() >= self.expires_at:
-				self.get_token()
+				self.__get_token()
 
 			headers = {
 				'Client-ID': self.bot.twitch_client,
@@ -69,23 +65,23 @@ class Partners(commands.Cog):
 			if jsondata.get('data')[0].get('user_login') == user:
 				return True
 			
-		except Exception as e:
+		except Exception:
 			pass
 
 		return False
 
 
 	@tasks.loop(seconds=10)
-	async def partner_lives_notification(self):
-		streamers = Helper.get_json(TWITCH_PARTNERS)
-		if streamers is not None:
-			for user_id, twitch_name in streamers.items():
-				status = self._check_user(twitch_name)
-				user = self.bot.get_user(int(user_id))
+	async def partner_live_notification(self):
+		if self.partners_list is not None:
+			for partner in self.partners_list:
+				status = self.__check_user(partner['twitch_user'])
+				userid = partner['userid']
+				user = self.bot.get_user(userid)
 			
 				if status is True:
-					if user_id not in self.streamers_online:
-						self.streamers_online.append(user_id)
+					if userid not in self.streamers_online:
+						self.streamers_online.append(userid)
 
 						self.bot.logger.info(f"{user} started streaming. Sending notification")
 						await self.bot.get_channel(int(DISCORD_PARTNERS_CHANNEL_ID)).send(
@@ -94,16 +90,16 @@ class Partners(commands.Cog):
 							allowed_mentions=discord.AllowedMentions(users=False)
 						)
 				else:
-					if user_id in self.streamers_online:
-						self.streamers_online.remove(user_id)
+					if userid in self.streamers_online:
+						self.streamers_online.remove(userid)
 
 	
 	@commands.command(name="tsopt", aliases=["Tstop"])
 	@commands.has_permissions(administrator=True)
 	async def tstop(self, ctx):
-		if self.partner_lives_notification.is_running():
+		if self.partner_live_notification.is_running():
 			try:
-				self.partner_lives_notification.stop()
+				self.partner_live_notification.stop()
 				self.bot.logger.info("twitch affiliates share stopped!")
 				await ctx.message.add_reaction("✅")
 			except Exception:
@@ -115,11 +111,11 @@ class Partners(commands.Cog):
 	@commands.has_permissions(administrator=True)
 	async def tstart(self, ctx):
 		if not self.authenticated:
-			await self._authenticate()
+			await self.__authenticate()
 
-		if not self.partner_lives_notification.is_running():
+		if not self.partner_live_notification.is_running():
 			try:
-				self.partner_lives_notification.start()
+				self.partner_live_notification.start()
 				self.bot.logger.info("twitch affiliates share started!")
 				await ctx.message.add_reaction("✅")
 			except Exception:
@@ -130,42 +126,41 @@ class Partners(commands.Cog):
 	@commands.command(name="addparceiro", aliases=["Addparceiro", "addp", "Addp"])
 	@commands.has_permissions(administrator=True)
 	async def add_twitch_partner(self, ctx, partner: discord.Member, twitch_name: str):
-		partner_user = ""
 		try:
-			streamers = Helper.get_json(TWITCH_PARTNERS)
-			streamers[str(partner.id)] = twitch_name
-			Helper.set_json(TWITCH_PARTNERS, streamers)
-			partner_user = self.bot.get_user(int(partner.id))
+			self.__partners.create_or_update_partner(
+				{
+					'username': partner.name,
+					'userid': partner.id,
+					'twitch_user': twitch_name
+				}
+			)
+			self.partners_list.append(self.__partners.get_partner_from_userid(partner.id))
 
-			await ctx.send(f"{self.bot.ftl.extract('partners-partner-successfully-added', partner=partner_user.name)}")
+			await ctx.send(f"{self.bot.ftl.extract('partners-partner-successfully-added', partner=partner.name)}")
 		except Exception:
 			self.bot.logger.exception()
-			await ctx.send(f"{self.bot.ftl.extract('partners-partner-could-not-be-added', parter=partner_user.name)}")
+			await ctx.send(f"{self.bot.ftl.extract('partners-partner-could-not-be-added', parter=partner.name)}")
 
 
 	@commands.command(name="rmparceiro", aliases=["Rmparceiro", "rmp", "Rmp"])
 	@commands.has_permissions(administrator=True)
 	async def rm_twitch_partner(self, ctx, partner: discord.Member):
-		partner_user = ""
 		try:
-			partner_id = str(partner.id)
-			streamers = Helper.get_json(TWITCH_PARTNERS)
-			if streamers and partner.id and streamers.get(partner_id):
+			partner_id = partner.id
+
+			if self.__partners.get_partner_from_userid(partner_id):
 				if partner_id in self.streamers_online:
 					self.streamers_online.remove(partner_id)
-				streamers.pop(partner_id)
-				Helper.set_json(TWITCH_PARTNERS, streamers)
-				partner_user = self.bot.get_user(int(partner.id))
+				
+				self.__partners.delete_partner(partner_id)
 
-				await ctx.send(f"{self.bot.ftl.extract('partners-partner-successfully-removed', partner=partner_user.name)}")
+				await ctx.send(f"{self.bot.ftl.extract('partners-partner-successfully-removed', partner=partner.name)}")
 			else:
-				partner_user = self.bot.get_user(int(partner.id))
-
-				await ctx.send(f"{self.bot.ftl.extract('partners-partner-could-not-be-found', partner=partner_user.name)}")
+				await ctx.send(f"{self.bot.ftl.extract('partners-partner-could-not-be-found', partner=partner.name)}")
 		except Exception:
 			self.bot.logger.exception()
 
-			await ctx.send(f"{self.bot.ftl.extract('partners-partner-could-not-be-removed', partner=partner_user.name)}")
+			await ctx.send(f"{self.bot.ftl.extract('partners-partner-could-not-be-removed', partner=partner.name)}")
 
 
 async def setup(bot):

@@ -5,6 +5,7 @@ import logging
 from constants import LOGGING_PATH
 from discord.ext import commands
 from helper import Helper, FTLExtractor
+from mongo.config.DBConnectionHandler import MongoConnectionHandler
 
 
 ### ENV VARIABLES ###
@@ -28,6 +29,10 @@ class TchangosBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        ### MONGO SETTINGS ###
+        mongodb = MongoConnectionHandler(gen_data['mongodb']['connection_string'])
+        self._mongodb = mongodb.get_conn(gen_data['mongodb']['user'], gen_data['mongodb']['pass'])
+
         ### SETTING LOGGER ###
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
@@ -48,11 +53,11 @@ class TchangosBot(commands.Bot):
         self.ftl = FTLExtractor(locale='pt', fallback_locale='pt')
 
         # GENAI KEY
-        self.genai_key = gen_data['GENAI']['KEY']
+        self.genai_key = gen_data['genai']['key']
 
         # TWITCH KEYS
-        self.twitch_client = gen_data['TWITCH']['CLIENT_ID']
-        self.twitch_secret = gen_data['TWITCH']['CLIENT_SECRET']
+        self.twitch_client = gen_data['twitch']['client_id']
+        self.twitch_secret = gen_data['twitch']['client_secret']
         self.twitch_token = None
         self.expires_at = 0
 
@@ -156,4 +161,4 @@ class TchangosBot(commands.Bot):
 if __name__ == '__main__':
     bot = TchangosBot(command_prefix=get_prefix, intents=intents)
 
-    bot.run(gen_data['TCHANGOS']['TOKEN'])
+    bot.run(gen_data['tchangos']['token'])

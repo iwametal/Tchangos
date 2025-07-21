@@ -12,6 +12,7 @@ discord = "^2.3.2"
 google-generativeai = "^0.8.5"
 jishaku = "^2.6.0"
 twitchapi = "^4.5.0"
+pydantic = "^2.11.7"
 
 
 [tool.poetry.group.env.dependencies]
@@ -21,6 +22,10 @@ configparser = "^7.2.0"
 [tool.poetry.group.language.dependencies]
 googletrans = "^4.0.2"
 fluent-runtime = "^0.4.0"
+
+
+[tool.poetry.group.database.dependencies]
+pymongo = {extras = ["srv"], version = "^4.13.2"}
 
 [build-system]
 requires = ["poetry-core"]
