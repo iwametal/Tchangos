@@ -28,7 +28,7 @@ class Partners(commands.Cog):
 	async def _authenticate(self):
 		try:
 			twitch = await Twitch(self.bot.twitch_client, self.bot.twitch_secret)
-			twitch.authenticate_app([])
+			await twitch.authenticate_app([])
 
 			self.authenticated = True
 		except Exception as e:
