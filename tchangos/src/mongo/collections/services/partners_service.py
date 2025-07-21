@@ -15,16 +15,18 @@ class PartnersService:
 
 
 	def get_partner_from_userid(self, userid: int) -> PartnersSchema | None:
-		return self.collection.find_one({"username": userid})
+		return self.collection.find_one({"userid": userid})
 
 
 	def get_partner_from_twitch_user(self, username: str) -> PartnersSchema | None:
-		return self.collection.find_one({"username": username})
+		return self.collection.find_one({"twitch_user": username})
 
 
 	def create_or_update_partner(self, partners_data: dict) -> PartnersSchema:
 		return self.collection.update_one(
 			{"userid": partners_data["userid"]},
+			{"username": partners_data["username"]},
+			{"twitch_user": partners_data["twitch_user"]},
 			{"$set": partners_data},
 			upsert=True
 		)
