@@ -1,6 +1,8 @@
 config.ini
 .env
 
+logs/*.log
+
 info.iwa
 
 __pycache__/
