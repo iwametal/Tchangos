@@ -86,7 +86,7 @@ class Partners(commands.Cog):
 						self.bot.logger.info(f"{user} started streaming. Sending notification")
 						await self.bot.get_channel(int(DISCORD_PARTNERS_CHANNEL_ID)).send(
 							f":red_circle: **LIVE\n** {self.bot.ftl.extract('partners-started-streaming-message', user=f'{user.mention}')}!\n"
-							f" https://www.twitch.tv/{twitch_name}",
+							f" https://www.twitch.tv/{partner['twitch_user']}",
 							allowed_mentions=discord.AllowedMentions(users=False)
 						)
 				else:
@@ -134,7 +134,9 @@ class Partners(commands.Cog):
 					'twitch_user': twitch_name
 				}
 			)
-			self.partners_list.append(self.__partners.get_partner_from_userid(partner.id))
+			_partner = self.__partners.get_partner_from_userid(partner.id)
+			if _partner not in self.partners_list:
+				self.partners_list.append(_partner)
 
 			await ctx.send(f"{self.bot.ftl.extract('partners-partner-successfully-added', partner=partner.name)}")
 		except Exception:
