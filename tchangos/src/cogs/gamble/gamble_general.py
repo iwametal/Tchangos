@@ -23,7 +23,7 @@ class GambleGeneral(commands.Cog):
 			if gamble_helper_cog:
 				await gamble_helper_cog.show_pokemon(ctx, num)
 			else:
-				print("Gamble Helper Cog not found!")
+				self.bot.logger.error("Gamble Helper Cog not found!")
 	
 	
 	async def ft1_roll(self, ctx, num: int):

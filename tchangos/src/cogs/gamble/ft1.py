@@ -22,7 +22,7 @@ class Ft1(commands.Cog):
 				roll_number = (await gamble_helper_cog.check_roll(message, 'ft1'))[0]
 			else:
 				roll_number = None
-				print("Gamble Helper Cog not found!")
+				self.bot.logger.error("Gamble Helper Cog not found!")
 
 			if roll_number and roll_number == 1:
 				embed = discord.Embed(title="FT1 WINNER!", description=f"**Congrats {message.author.mention}!** You won the gamble!")

@@ -40,7 +40,7 @@ class Chat(commands.Cog):
 			else:
 				await ctx.send(response.text)
 		except Exception as e:
-			await print(e)
+			self.bot.logger.exception('Error giving chat response')
 
 
 async def setup(bot):

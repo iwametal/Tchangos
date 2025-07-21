@@ -35,14 +35,14 @@ class Generic(commands.Cog):
 				await member.ban(reason=reason)
 
 			except Exception as e:
-				print(e)
+				self.bot.logger.error(e)
 
 			try:
 				ban_msg = self.bot.ftl.extractor('generic-member-banned-dm-message')
 				bandm = discord.Embed(title=f"<:aham:978415635203756132> | {ban_msg}!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
 				await member.send(embed=bandm)
 			except Exception as e:
-				print(e)
+				self.bot.logger.error(e)
 
 		# ban_embed = discord.Embed(
 		# 	title=f"<:1257147175649935361:> <:1257147441732390933:> | Banned {member.name} from Shroom Room!", 
@@ -97,14 +97,14 @@ class Generic(commands.Cog):
 			try:
 				await member.kick(reason=reason)
 			except Exception as e:
-				print(e)
+				self.bot.logger.error(e)
 
 			try:
 				kickdm_msg = self.bot.ftl.extract('generic-member-kicked-dm-message')
 				kickdm = discord.Embed(title=f"<:hammer:> | {kickdm_msg}!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
 				await member.send(embed=kickdm)
 			except Exception as e:
-				print(e)
+				self.bot.logger.error(e)
 
 
 	"""PURGE COMMAND

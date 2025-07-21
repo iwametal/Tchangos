@@ -181,7 +181,7 @@ class GambleHelper(commands.Cog):
 				roll = int(roll_number)
 				return roll
 		except (ValueError, IndexError, AttributeError) as e:
-			print(f'[debug] Failed to extract Dex number for n!roll: {e}')
+			self.bot.logger.exception(f'[debug] Failed to extract Dex number for n!roll')
 			return None
 	
 
@@ -196,7 +196,7 @@ class GambleHelper(commands.Cog):
 				roll = int(roll_number)
 				return roll
 		except (ValueError, IndexError, AttributeError) as e:
-			print(f'[debug] Failed to extract Dex number for !roll: {e}')
+			self.bot.logger.exception(f'[debug] Failed to extract Dex number for !roll')
 			return None
 	
 
@@ -208,7 +208,7 @@ class GambleHelper(commands.Cog):
 			roll = int(roll_number)
 			return roll
 		except (ValueError, IndexError) as e:
-			print(f'[debug] Failed to extract Dex number for >roll: {e}')
+			self.bot.logger.exception(f'[debug] Failed to extract Dex number for >roll')
 			return None
 	
 
@@ -224,16 +224,15 @@ class GambleHelper(commands.Cog):
 				roll = int(roll_number)
 				return roll
 		except (ValueError, IndexError, AttributeError) as e:
-			print(f'[debug] Failed to extract Dex number for +roll: {e}')
+			self.bot.logger.excpetion(f'[debug] Failed to extract Dex number for +roll')
 			return None
 	
 
 	""" Extract Roll Number
 	"""
 	def extract(self, prefix, message):
-		print(message)
 		if prefix not in self.extract_methods:
-			print(f'[debug] Failed to extract Dex number: Unknown prefix {prefix}')
+			self.bot.logger.warning(f'[debug] Failed to extract Dex number: Unknown prefix {prefix}')
 			return None
 
 		return self.extract_methods[prefix]['method'](message)
@@ -273,7 +272,7 @@ class GambleHelper(commands.Cog):
 					return roll_number, 'ft1'
 
 			except asyncio.TimeoutError:
-				print("[debug] Timed out waiting for the next message.")
+				self.bot.logger.debug("Timed out waiting for the next message.")
 				return None, None
 
 		return None, None

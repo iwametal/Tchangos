@@ -1,0 +1,8 @@
+2025-07-21 10:23:59,213:ERROR:__main__:Unable to translate message
+Traceback (most recent call last):
+  File "/home/coffee/git/github/bb1nho-bot/tchangos/src/cogs/generic/translate.py", line 25, in on_reaction_add
+    trans_msg = await translator.translate(message.content, dest=TRANSLATE_FLAGS[reaction.emoji])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/coffee/.cache/pypoetry/virtualenvs/tchangos-JF9qi3CD-py3.11/lib/python3.13/site-packages/googletrans/client.py", line 269, in translate
+    raise ValueError("invalid destination language")
+ValueError: invalid destination language

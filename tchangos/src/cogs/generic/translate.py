@@ -24,8 +24,8 @@ class Translate(commands.Cog):
 				translator = Translator()
 				trans_msg = await translator.translate(message.content, dest=TRANSLATE_FLAGS[reaction.emoji])
 				await message.channel.send(f"-# {message.content}\n> {trans_msg.text}")
-			except Exception as e:
-				print(e)
+			except Exception:
+				self.bot.logger.exception('Unable to translate message')
 				translate_error_msg = self.bot.ftl.extract('translate-unnable-to-translate-message')
 				await message.channel.send(f"❌ | {translate_error_msg}")
 	
@@ -37,8 +37,8 @@ class Translate(commands.Cog):
 			translator = Translator()
 			trans_msg = await translator.translate(message, dest='pt')
 			await ctx.send(f"-# {message}\n> {trans_msg.text}")
-		except Exception as e:
-			print(e)
+		except Exception:
+			self.bot.logger.exception('Unable to translate message')
 			translate_error_msg = self.bot.ftl.extract('translate-unnable-to-translate-message')
 			await message.channel.send(f"❌ | {translate_error_msg}")
 

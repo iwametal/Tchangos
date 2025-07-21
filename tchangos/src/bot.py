@@ -1,6 +1,8 @@
 import discord
+import logging
 
 # from constants import channels, pokemon_data, rand_stats
+from constants import LOGGING_PATH
 from discord.ext import commands
 from helper import Helper, FTLExtractor
 
@@ -25,6 +27,24 @@ class TchangosBot(commands.Bot):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        ### SETTING LOGGER ###
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+
+        formatter = logging.Formatter("%(asctime)s:%(levelname)s:%(name)s:%(message)s")
+
+        file_handler = logging.FileHandler(f'{LOGGING_PATH}/bot.log')
+        file_handler.setLevel(logging.WARNING)
+        file_handler.setFormatter(formatter)
+
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(formatter)
+
+        self.logger.addHandler(file_handler)
+        self.logger.addHandler(stream_handler)
+        ###
+
         self.ftl = FTLExtractor(locale='pt', fallback_locale='pt')
 
         # GENAI KEY
@@ -53,10 +73,9 @@ class TchangosBot(commands.Bot):
 
     # ON BOT START
     async def on_ready(self):
-        print(f'Logged in as {self.user}')
-        print('------')
+        self.logger.info(f'Logged in as {self.user}\n------')
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Tchangos"))
-        print("Tchangos bot is up")
+        self.logger.info("Tchangos bot is up")
     
 
     async def on_command_error(self, ctx, error):
@@ -64,17 +83,16 @@ class TchangosBot(commands.Bot):
             pass
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send(f"🚫 | {self.ftl.extract('missing-permissions', error=str(error))}")
-            print(f"🚫 Falta de permissoes:\n`{str(error)}`")
-            # await ctx.send(f" | Sem permissões, noob. {error}")
+            self.logger.warning(f"🚫 | {self.ftl.extract('missing-permissions', error=str(error))}")
         elif isinstance(error, commands.CheckFailure):
             await ctx.send(f"❌ | {self.ftl.extract('check-failure', error=str(error))}")
-            print(f"❌ Erro de checagem:\n`{str(error)}`")
-            # await ctx.send(f" | Check Failure. {error}")
+            self.logger.warning(f"❌ | {self.ftl.extract('check-failure', error=str(error))}")
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"⚠️ | {self.ftl.extract('missing-required-argument')}. {error}")
+            self.logger.warning(f"⚠️ | {self.ftl.extract('missing-required-argument')} -> {error}")
         else:
-            await ctx.send(f"️️⚠️ | {self.ftl.extract('unexpected-error', error=str(error))}")
-            print(f"⚠️ Erro inesperado:\n`{str(error)}`")
+            # await ctx.send(f"️️❌ | {self.ftl.extract('unexpected-error', error=str(error))}")
+            logging.exception(f"❌ | <Unexpected error>")
 
 
     # # SYNC SLASH COMMANDS WITH ?sync
@@ -130,9 +148,9 @@ class TchangosBot(commands.Bot):
                     cog_path = f"cogs.{folder}.{cog}"
                     try:
                         await self.load_extension(cog_path)
-                        print(f"Loaded {cog_path}")
+                        self.logger.info(f"Loaded {cog_path}")
                     except Exception as e:
-                        print(f"Failed to load {cog_path}: {e}")
+                        self.logger.exception(f"<Failed to load {cog_path}>")
 
 
 if __name__ == '__main__':

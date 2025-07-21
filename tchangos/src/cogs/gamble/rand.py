@@ -22,7 +22,7 @@ class Rand(commands.Cog):
 				roll_number, gamble_type = await gamble_helper_cog.check_roll(message, 'rand')
 			else:
 				roll_number, gamble_type = None, None
-				print("Gamble Helper Cog not found!")
+				self.bot.logger.error("Gamble Helper Cog not found!")
 
 			if roll_number and gamble_type:
 				if gamble_type == 'rand':
@@ -90,7 +90,7 @@ class Rand(commands.Cog):
 			if gamble_helper_cog:
 				await gamble_helper_cog.show_pokemon(ctx, num)
 			else:
-				print("Gamble Helper Cog not found!")
+				self.bot.logger.error("Gamble Helper Cog not found!")
 
 		except ValueError:
 			await ctx.send(f"Please enter a valid number between 1 and {len(self.pokemon_data)}")

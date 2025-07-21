@@ -28,6 +28,7 @@ TRANSLATE_FLAGS = {
 }
 
 FTL_PATH = "locale/{}"
+LOGGING_PATH = "logs"
 
 
 ###

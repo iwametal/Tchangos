@@ -6,7 +6,7 @@ import random
 
 from constants import FTL_PATH
 from fluent.runtime import FluentResource, FluentBundle
-from fluent.runtime.errors import FluentFormatError
+# from fluent.runtime.errors import FluentFormatError
 from pathlib import Path
 
 
@@ -64,19 +64,16 @@ class FTLExtractor:
 
 
     def load_bundle(self, locale):
-        print("Loading bundles...")
         bundle = FluentBundle([locale])
         base_dir = Path(FTL_PATH.format(locale))
 
         if not base_dir.exists():
             return bundle
 
-        print("Loading ftl files...")
         for ftl_file in base_dir.glob("*.ftl"):
             content = ftl_file.read_text(encoding="utf-8")
             resource = FluentResource(content)
             bundle.add_resource(resource)
-            print(f"Bundle {ftl_file} loaded.")
         return bundle
 
 

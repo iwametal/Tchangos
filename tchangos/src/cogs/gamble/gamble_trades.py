@@ -25,7 +25,7 @@ class GambleTrades(commands.Cog):
 				ret = len(msg_part) > 2\
 					and msg_part[0] in trade_messages['command']
 		except Exception as e:
-			print(f"Error checking trade: {e}")
+			self.bot.logger.exception(f"<Error checking trade>")
 			ret = False
 		
 		return ret
@@ -94,12 +94,12 @@ class GambleTrades(commands.Cog):
 					await log_channel.send(embed=embed)
 
 			except asyncio.TimeoutError as e:
-				print(f"Could not track a completed trade {e}")
+				self.bot.logger.exception(f"Could not track a completed trade")
 	
 
 	@commands.command(name="ttt")
 	async def ttt(self, ctx):
-		print(ctx.mentions[0])
+		self.bot.logger.debug(ctx.mentions[0])
 		if any(ctx.channel.id in channels for channels in self.bot.channels['gamble'].values())\
 			and len(ctx.mentions) == 2 and ctx.mentions[0] == POKETWO_USER:
 			await ctx.channel.send(f"{ctx.mentions[0]} - {ctx.mentions[1]}")
