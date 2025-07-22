@@ -22,14 +22,15 @@ class PartnersService:
 		return self.collection.find_one({"twitch_user": username})
 
 
-	def create_or_update_partner(self, partners_data: dict) -> PartnersSchema:
-		return self.collection.update_one(
-			{"userid": partners_data["userid"]},
-			{"username": partners_data["username"]},
-			{"twitch_user": partners_data["twitch_user"]},
-			{"$set": partners_data},
-			upsert=True
-		)
+	def create_or_update_partner(self, partners_data: dict) -> PartnersSchema | None:
+		if self.get_partner_from_userid(partners_data['userid']):
+			return self.collection.update_one(
+				{"userid": partners_data["userid"]},
+				{"$set": partners_data},
+				upsert=True
+			)
+		
+		return self.collection.insert_one(partners_data)
 	
 
 	def delete_partner(self, partner_id):

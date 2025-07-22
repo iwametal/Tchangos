@@ -1,15 +1,15 @@
-from helper import Helper
-from mongo.config.DBConnectionHandler import MongoConnectionHandler
-from mongo.collections.services.partners_service import PartnersService
+# import mysq.connector
+# import discord
+# from discord.ext import commands
+# import os
+# from typing import final
+# from dotvs import
+# from discord import Intents, Client, Message
+# from responses import get_response
 
+# load_dotvs()
+import bot
 
-data = Helper.get_general_config('config.ini')
-mongo = MongoConnectionHandler(data['mongodb']['connection_string'])
-
-mongodb = mongo.get_conn(data['mongodb']['user'], data['mongodb']['pass'])
-
-__partners = PartnersService(mongodb)
-
-partners = __partners.get_partners()
-
-print(partners)
+if __name__ == '__main__':
+        bot.run_discord_bot()
+        
