@@ -24,7 +24,7 @@ TRANSLATE_FLAGS = {
     "🇲🇽": 'es',
     "🇦🇷": 'es',
     "🇪🇸": 'es',
-    "🇮🇪": 'hi',
+    "🇮🇳": 'hi',
 }
 
 FTL_PATH = "locale/{}"
