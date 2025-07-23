@@ -8,5 +8,4 @@ RUN poetry config virtualenvs.create false
 COPY . ./
 RUN poetry install
 
-COPY . .
 CMD ["python", "./tchangos/src/bot.py"]
