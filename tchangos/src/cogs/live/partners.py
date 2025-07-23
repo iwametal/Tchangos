@@ -17,7 +17,7 @@ class Partners(commands.Cog):
 		self.authenticated = False
 
 		self.__partners = PartnersService(self.bot._mongodb)
-		self.partners_list = self.__partners.get_partners()
+		self.partners_list = self.__partners.get_partners(sort_field='twitch_user', sort_order='ascending')
 		self.streamers_online = []
 		self.__send_notify = True
 
@@ -149,7 +149,7 @@ class Partners(commands.Cog):
 
 			for partner in self.partners_list:
 				if partner['userid'] in self.streamers_online:
-					online = f"{online}- {partner['twitch_user']}\n"
+					online = f"{online}- **{partner['twitch_user']}** - <https://twitch.tv/{partner['twitch_user']}>\n"
 				else:
 					offline = f"{offline}> {partner['twitch_user']}\n"
 			

@@ -1,4 +1,5 @@
 from mongo.collections.schemas.partners_schema import PartnersSchema
+from pymongo import ASCENDING, DESCENDING
 
 
 class PartnersService:
@@ -6,8 +7,15 @@ class PartnersService:
 		self.collection = mongodb.tchangos.partners
 
 
-	def get_partners(self) -> list[PartnersSchema]:
-		return list(self.collection.find())
+	def get_partners(self, sort_field=None, sort_order='ascending') -> list[PartnersSchema]:
+		if not sort_field:
+			return list(self.collection.find())
+
+		return list(
+			self.collection.find().sort(
+				sort_field, DESCENDING if sort_order.lower() == 'descending' else ASCENDING
+			)
+		)
 
 
 	def get_partner_from_username(self, username: str) -> PartnersSchema | None:
