@@ -13,9 +13,7 @@ gen_data = Helper.get_general_config('config.ini')
 
 
 def get_prefix(bot, message):
-    prefixes = ['b.']
-    # You can add more complex logic here to determine the prefix
-    return commands.when_mentioned_or(*prefixes)(bot, message)
+    return commands.when_mentioned_or('.')(bot, message)
 
 intents = discord.Intents.default()
 intents.members = True
@@ -74,7 +72,7 @@ class TchangosBot(commands.Bot):
         #     'roll_number': 0,
         #     'roll_max': 0
         # }
-
+    
 
     # ON BOT START
     async def on_ready(self):
@@ -86,18 +84,14 @@ class TchangosBot(commands.Bot):
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
             pass
-        elif isinstance(error, commands.MissingPermissions):
-            await ctx.send(f"🚫 | {self.ftl.extract('missing-permissions', error=str(error))}")
-            self.logger.warning(f"🚫 | {self.ftl.extract('missing-permissions', error=str(error))}")
-        elif isinstance(error, commands.CheckFailure):
-            await ctx.send(f"❌ | {self.ftl.extract('check-failure', error=str(error))}")
-            self.logger.warning(f"❌ | {self.ftl.extract('check-failure', error=str(error))}")
-        elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"⚠️ | {self.ftl.extract('missing-required-argument')}. {error}")
-            self.logger.warning(f"⚠️ | {self.ftl.extract('missing-required-argument')} -> {error}")
-        else:
-            # await ctx.send(f"️️❌ | {self.ftl.extract('unexpected-error', error=str(error))}")
-            logging.exception(f"❌ | <Unexpected error>")
+
+        from error_list import command_error_list
+        for key, value in command_error_list.items():
+            if isinstance(error, value['error']):
+                await ctx.send(f"{value['prefix']}{self.ftl.extract(key)} -> {error}")
+                return
+
+        self.logger.exception(f"❌ | <Unexpected error>\n{error}")
 
 
     # # SYNC SLASH COMMANDS WITH ?sync

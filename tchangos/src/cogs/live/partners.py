@@ -19,6 +19,7 @@ class Partners(commands.Cog):
 		self.__partners = PartnersService(self.bot._mongodb)
 		self.partners_list = self.__partners.get_partners()
 		self.streamers_online = []
+		self.__send_notify = True
 
 
 	async def __authenticate(self):
@@ -83,18 +84,34 @@ class Partners(commands.Cog):
 					if userid not in self.streamers_online:
 						self.streamers_online.append(userid)
 
-						self.bot.logger.info(f"{user} started streaming. Sending notification")
-						await self.bot.get_channel(int(DISCORD_PARTNERS_CHANNEL_ID)).send(
-							f":red_circle: **LIVE\n** {self.bot.ftl.extract('partners-started-streaming-message', user=f'{user.mention}')}!\n"
-							f" https://www.twitch.tv/{partner['twitch_user']}",
-							allowed_mentions=discord.AllowedMentions(users=False)
-						)
+						if self.__send_notify is True:
+							self.bot.logger.info(f"{user} started streaming. Sending notification")
+							await self.bot.get_channel(int(DISCORD_PARTNERS_CHANNEL_ID)).send(
+								f":red_circle: **LIVE\n** {self.bot.ftl.extract('partners-started-streaming-message', user=f'{user.mention}')}!\n"
+								f" https://www.twitch.tv/{partner['twitch_user']}",
+								allowed_mentions=discord.AllowedMentions(users=False)
+							)
 				else:
 					if userid in self.streamers_online:
 						self.streamers_online.remove(userid)
 
+
+	@commands.command(name="partnersnotify", aliases=["Partnersnotify", "Notify", "notify"])
+	@commands.has_permissions(administrator=True)
+	async def partners_notify(self, ctx, notify: str="true"):
+		notify = notify.lower()
+		if notify in ["true", "t"]:
+			self.__send_notify = True
+		elif notify in ["false", "f"]:
+			self.__send_notify = False
+		else:
+			await ctx.message.add_reaction("‼️")
+			return
+
+		await ctx.message.add_reaction("✅")
+
 	
-	@commands.command(name="tsopt", aliases=["Tstop"])
+	@commands.command(name="tstop", aliases=["Tstop"])
 	@commands.has_permissions(administrator=True)
 	async def tstop(self, ctx):
 		if self.partner_live_notification.is_running():
@@ -109,11 +126,12 @@ class Partners(commands.Cog):
 
 	@commands.command(name="tstart", aliases=["Tstart"])
 	@commands.has_permissions(administrator=True)
-	async def tstart(self, ctx):
+	async def tstart(self, ctx, notify: str="true"):
 		if not self.authenticated:
 			await self.__authenticate()
 
 		if not self.partner_live_notification.is_running():
+			self.__send_notify = True if notify.lower() in ["true", "t"] else False if notify.lower() in ["false", "f"] else self.__send_notify
 			try:
 				self.partner_live_notification.start()
 				self.bot.logger.info("twitch affiliates share started!")
@@ -121,6 +139,24 @@ class Partners(commands.Cog):
 			except Exception:
 				self.bot.logger.exception()
 				await ctx.message.add_reaction("‼️")
+
+
+	@commands.command(name="listparceiros", aliases=["Listparceiros", "Lsparceiros", "lsparceiros", "Lsp", "lsp"])
+	async def list_twitch_partners(self, ctx):
+		if self.partners_list:
+			online = "-# 🟢 online\n" if len(self.streamers_online) > 0 else ""
+			offline = "-# 🔴 offline\n" if len(self.streamers_online) < len(self.partners_list) else ""
+
+			for partner in self.partners_list:
+				if partner['userid'] in self.streamers_online:
+					online = f"{online}> {partner['twitch_user']}\n"
+				else:
+					offline = f"{offline}> {partner['twitch_user']}\n"
+			
+			await ctx.send(f"{online}\n{offline}")
+		
+		else:
+			await ctx.send(self.bot.ftl.extract('partners-no-partners-found'))
 
 
 	@commands.command(name="addparceiro", aliases=["Addparceiro", "addp", "Addp"])
@@ -148,19 +184,19 @@ class Partners(commands.Cog):
 	@commands.has_permissions(administrator=True)
 	async def rm_twitch_partner(self, ctx, partner: discord.Member):
 		try:
-			partner_id = partner.id
-
-			if self.__partners.get_partner_from_userid(partner_id):
-				if partner_id in self.streamers_online:
-					self.streamers_online.remove(partner_id)
+			partner_obj = self.__partners.get_partner_from_userid(partner.id)
+			if partner_obj:
+				if partner.id in self.streamers_online:
+					self.streamers_online.remove(partner.id)
 				
-				self.__partners.delete_partner(partner_id)
+				self.partners_list.remove(partner_obj)
+				self.__partners.delete_partner(partner.id)
 
 				await ctx.send(f"{self.bot.ftl.extract('partners-partner-successfully-removed', partner=partner.name)}")
 			else:
 				await ctx.send(f"{self.bot.ftl.extract('partners-partner-could-not-be-found', partner=partner.name)}")
 		except Exception:
-			self.bot.logger.exception()
+			self.bot.logger.exception(f"{self.bot.ftl.extract('partners-partner-could-not-be-removed', partner=partner.name)}")
 
 			await ctx.send(f"{self.bot.ftl.extract('partners-partner-could-not-be-removed', partner=partner.name)}")
 
