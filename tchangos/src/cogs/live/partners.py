@@ -149,7 +149,7 @@ class Partners(commands.Cog):
 
 			for partner in self.partners_list:
 				if partner['userid'] in self.streamers_online:
-					online = f"{online}> {partner['twitch_user']}\n"
+					online = f"{online}- {partner['twitch_user']}\n"
 				else:
 					offline = f"{offline}> {partner['twitch_user']}\n"
 			
