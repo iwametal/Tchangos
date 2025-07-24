@@ -30,6 +30,7 @@ class TchangosBot(commands.Bot):
         ### MONGO SETTINGS ###
         mongodb = MongoConnectionHandler(gen_data['mongodb']['connection_string'])
         self._mongodb = mongodb.get_conn(gen_data['mongodb']['user'], gen_data['mongodb']['pass'])
+        ###
 
         ### SETTING LOGGER ###
         self.logger = logging.getLogger(__name__)
@@ -48,16 +49,17 @@ class TchangosBot(commands.Bot):
         self.logger.addHandler(stream_handler)
         ###
 
+        ### FLUENT ###
         self.ftl = FTLExtractor(locale='pt', fallback_locale='pt')
+        ###
 
-        # GENAI KEY
+        ### KEYS ###
         self.genai_key = gen_data['genai']['key']
-
-        # TWITCH KEYS
         self.twitch_client = gen_data['twitch']['client_id']
         self.twitch_secret = gen_data['twitch']['client_secret']
         self.twitch_token = None
         self.expires_at = 0
+        ###
 
         # POKEMON_DATA
         # self.pokemon_data = pokemon_data
@@ -74,7 +76,6 @@ class TchangosBot(commands.Bot):
         # }
     
 
-    # ON BOT START
     async def on_ready(self):
         self.logger.info(f'Logged in as {self.user}\n------')
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Tchangos"))
@@ -94,41 +95,6 @@ class TchangosBot(commands.Bot):
         self.logger.exception(f"❌ | <Unexpected error>\n{error}")
 
 
-    # # SYNC SLASH COMMANDS WITH ?sync
-    # from typing import Literal, Optional
-    # @bot.command()
-    # @commands.guild_only()
-    # @commands.is_owner()
-    # async def sync(ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
-    #     if not guilds:
-    #         if spec == "~":
-    #             synced = await ctx.bot.tree.sync(guild=ctx.guild)
-    #         elif spec == "*":
-    #             ctx.bot.tree.copy_global_to(guild=ctx.guild)
-    #             synced = await ctx.bot.tree.sync(guild=ctx.guild)
-    #         elif spec == "^":
-    #             ctx.bot.tree.clear_commands(guild=ctx.guild)
-    #             await ctx.bot.tree.sync(guild=ctx.guild)
-    #             synced = []
-    #         else:
-    #             synced = await ctx.bot.tree.sync()
-
-    #         await ctx.send(
-    #             f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
-    #         )
-    #         return
-
-    #     ret = 0
-    #     for guild in guilds:
-    #         try:
-    #             await ctx.bot.tree.sync(guild=guild)
-    #         except discord.HTTPException:
-    #             pass
-    #         else:
-    #             ret += 1
-
-    #     await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
-
     async def setup_hook(self):
         import glob
         import os
@@ -139,7 +105,6 @@ class TchangosBot(commands.Bot):
 
         for folder in cog_folders:
             cog_files = glob.glob(os.path.join(f"tchangos/src/cogs/{folder}", "*.py"))
-            # cog_files = glob.glob(os.path.join("cogs", "*.py"))
 
             for cog_f in cog_files:
                 if cog_f.endswith(".py") and not cog_f.endswith("__init__.py"):

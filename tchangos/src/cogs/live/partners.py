@@ -2,9 +2,8 @@ import discord
 import requests
 import time
 
-from constants import DISCORD_PARTNERS_CHANNEL_ID, TWITCH_PARTNERS
+from constants import DISCORD_PARTNERS_CHANNEL_ID, REACTION
 from discord.ext import commands, tasks
-from helper import Helper
 from mongo.collections.services.partners_service import PartnersService
 from twitchAPI.twitch import Twitch
 
@@ -105,10 +104,10 @@ class Partners(commands.Cog):
 		elif notify in ["false", "f"]:
 			self.__send_notify = False
 		else:
-			await ctx.message.add_reaction("‼️")
+			await ctx.message.add_reaction(REACTION['fail'])
 			return
 
-		await ctx.message.add_reaction("✅")
+		await ctx.message.add_reaction(REACTION['success'])
 
 	
 	@commands.command(name="tstop", aliases=["Tstop"])
@@ -118,9 +117,9 @@ class Partners(commands.Cog):
 			try:
 				self.partner_live_notification.stop()
 				self.bot.logger.info("twitch affiliates share stopped!")
-				await ctx.message.add_reaction("✅")
+				await ctx.message.add_reaction(REACTION['success'])
 			except Exception:
-				await ctx.message.add_reaction("‼️")
+				await ctx.message.add_reaction(REACTION['fail'])
 				self.bot.logger.exception()
 
 
@@ -131,14 +130,16 @@ class Partners(commands.Cog):
 			await self.__authenticate()
 
 		if not self.partner_live_notification.is_running():
-			self.__send_notify = True if notify.lower() in ["true", "t"] else False if notify.lower() in ["false", "f"] else self.__send_notify
+			options = ['true', 't', 'false', 'f']
+			self.__send_notify = notify.lower() in options[:2] if notify.lower() in options else self.__send_notify
+
 			try:
 				self.partner_live_notification.start()
 				self.bot.logger.info("twitch affiliates share started!")
-				await ctx.message.add_reaction("✅")
+				await ctx.message.add_reaction(REACTION['success'])
 			except Exception:
-				self.bot.logger.exception()
-				await ctx.message.add_reaction("‼️")
+				self.bot.logger.exception('Could not start affiliates sharing -> ')
+				await ctx.message.add_reaction(REACTION['fail'])
 
 
 	@commands.command(name="listparceiros", aliases=["Listparceiros", "Lsparceiros", "lsparceiros", "Lsp", "lsp"])

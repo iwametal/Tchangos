@@ -1,5 +1,6 @@
 import discord
 
+from constants import REACTION
 from discord.ext import commands
 
 
@@ -20,7 +21,7 @@ class GuildManager(commands.Cog):
 			await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
 
 			try:
-				await ctx.message.add_reaction('✅')
+				await ctx.message.add_reaction(REACTION['success'])
 			except Exception:
 				lock_msg = self.bot.ftl.extract('guild-manager-lock-channel-message', channel=channel.name)
 				await ctx.send(f'{lock_msg}!')
@@ -39,7 +40,7 @@ class GuildManager(commands.Cog):
 			await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
 
 			try:
-				await ctx.message.add_reaction('✅')
+				await ctx.message.add_reaction(REACTION['success'])
 			except Exception:
 				unlock_msg = self.bot.ftl.extract('guild-manager-unlock-channel-message')
 				await ctx.send(f'{unlock_msg}!')

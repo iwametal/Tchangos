@@ -1,4 +1,4 @@
-TWITCH_PARTNERS = 'tchangos/data/streamers.json'
+# TWITCH_PARTNERS = 'tchangos/data/streamers.json'
 
 DISCORD_COFFEE_GUILD_ID=821140045586497546
 DISCORD_GUILD_ID=852352783977938986
@@ -29,6 +29,11 @@ TRANSLATE_FLAGS = {
 
 FTL_PATH = "locale/{}"
 LOGGING_PATH = "logs"
+
+REACTION = {
+	'fail': '‼️',
+	'success': '✅',
+}
 
 
 ###
