@@ -70,7 +70,7 @@ git add $project
 git commit -m "updating $project version from $version to $n1.$n2.$n3"
 
 echo "creating tag for new version -> v$n1.$n2.$n3"
-[ -z $tag_commit_message ] && git tag -a "v$n1.$n2.$n3" || git tag -a "v$n1.$n2.$n3" -m $tag_commit_message
+[ -z $tag_commit_message ] && git tag -a "v$n1.$n2.$n3" || git tag -a "v$n1.$n2.$n3" -m "$tag_commit_message"
 
 echo "pushing version update change to current branch"
 git push
