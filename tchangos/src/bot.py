@@ -84,7 +84,7 @@ class TchangosBot(commands.Bot):
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
-            pass
+            return
 
         from error_list import command_error_list
         for key, value in command_error_list.items():
