@@ -1,4 +1,4 @@
-config.ini
+.config.ini
 .env
 
 logs/*.log

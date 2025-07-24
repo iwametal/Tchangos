@@ -9,7 +9,7 @@ from mongo.config.DBConnectionHandler import MongoConnectionHandler
 
 
 ### ENV VARIABLES ###
-gen_data = Helper.get_general_config('config.ini')
+gen_data = Helper.get_general_config('.config.ini')
 
 
 def get_prefix(bot, message):
