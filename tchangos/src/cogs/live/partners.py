@@ -43,7 +43,7 @@ class Partners(commands.Cog):
 		data = response.json()
 
 		self.bot.twitch_token = data['access_token']
-		self.expires_at = time.time() + data['expires_in'] - 60
+		self.bot.expires_at = time.time() + data['expires_in'] - 60
 
 
 	def __check_user(self, user):
@@ -51,7 +51,7 @@ class Partners(commands.Cog):
 		url = self.TWITCH_STREAM_API_ENDPOINT_V5.format(user)
 		try:
 
-			if not self.bot.twitch_token or time.time() >= self.expires_at:
+			if not self.bot.twitch_token or time.time() >= self.bot.expires_at:
 				self.__get_token()
 
 			headers = {
