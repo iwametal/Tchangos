@@ -1,9 +1,17 @@
+### ENVIRONMENT ###
 .config.ini
 .env
+###
 
-logs/*.log
+### LOGS ###
+*/logs/*.log
+###
 
+### EXTRA ###
 info.iwa
+###
 
+### CACHE ###
 __pycache__/
 .vscode/
+###
