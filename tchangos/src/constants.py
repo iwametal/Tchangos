@@ -27,8 +27,8 @@ TRANSLATE_FLAGS = {
     "🇮🇳": 'hi',
 }
 
-FTL_PATH = "locale/{}"
-LOGGING_PATH = "logs"
+FTL_PATH = "tchangos/locale/{}"
+LOGGING_PATH = "tchangos/logs"
 
 REACTION = {
 	'fail': '‼️',
