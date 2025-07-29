@@ -40,7 +40,8 @@ if [ "$1" != "-d" ] ; then
 fi
 [ -z $version ] &&\
     echo "getting current version of the project" &&\
-    version=$(sed -n "/name\ \=\ \"Tchangos\"/{n;p}" pyproject.toml | sed "s/version\ \=\ //gI" | sed "s/\"//gI")
+    version=$(sed -n "/name\ \=\ \"Tchangos\"/{n;p}" pyproject.toml | sed "s/version\ \=\ //gI" | sed "s/\"//gI") &&\
+    echo "-> $version"
 
 echo "creating image {$image_name} version {$version}"
 docker buildx build -t $image_name:$version .
@@ -51,6 +52,8 @@ if [ "$1" != "-d" ] ; then
   echo ""
   [ $option -eq 0 ] &&\
     read -p "which name you want to give for the container? [Default: ${default_container_name}]: " container_name
+else
+  option=0
 fi
 
 if [ $option -eq 0 ]; then
