@@ -50,7 +50,7 @@ class TchangosBot(commands.Bot):
         ###
 
         ### FLUENT ###
-        self.ftl = FTLExtractor(locale='pt', fallback_locale='pt')
+        self.ftl = FTLExtractor(locale='pt_br', fallback_locale='pt_br')
         ###
 
         ### KEYS ###
