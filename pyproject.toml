@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "Tchangos"
-version = "0.1.13"
+version = "0.1.14"
 description = ""
 authors = ["iwametal <od.leonardo01@gmail.com>"]
 readme = "README.md"
