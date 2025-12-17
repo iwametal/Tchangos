@@ -7,7 +7,7 @@ class Chat(commands.Cog):
 		self.bot = bot
 
 		genai.configure(api_key=self.bot.genai_key)
-		model = genai.GenerativeModel("gemini-1.5-flash")
+		model = genai.GenerativeModel("gemini-2.5-flash")
 		self._chat = model.start_chat(history=[])
 		self.MAX_HISTORY_LENGTH = 100
 
