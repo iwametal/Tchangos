@@ -26,10 +26,16 @@ class Helper:
 
 
     @staticmethod
-    def get_json(path, default_data=None):
+    def get_json(path, default_data=None, int_keys=False):
+        def keys_to_int(x):
+            return {int(k): v for k, v in x.items()}
+
         content = default_data
         with open(path, 'r', encoding='utf-8') as file:
-            content = json.loads(file.read())
+            content = json.loads(
+                file.read(),
+                object_hook = keys_to_int if int_keys else None
+            )
 
         return content
 
