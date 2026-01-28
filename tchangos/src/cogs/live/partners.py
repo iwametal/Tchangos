@@ -2,7 +2,7 @@ import discord
 import requests
 import time
 
-from constants import DISCORD_PARTNERS_CHANNEL_ID, REACTION
+from constants import DISCORD_PARTNERS_CHANNEL_ID, REACTION, TWITCH_LOGO
 from discord.ext import commands, tasks
 from mongo.collections.services.partners_service import PartnersService
 from twitchAPI.twitch import Twitch
@@ -66,7 +66,7 @@ class Partners(commands.Cog):
 				return True
 			
 		except Exception:
-			pass
+			self.bot.logger.exception('Unable to check user')
 
 		return False
 
@@ -140,6 +140,20 @@ class Partners(commands.Cog):
 			except Exception:
 				self.bot.logger.exception('Could not start affiliates sharing -> ')
 				await ctx.message.add_reaction(REACTION['fail'])
+
+
+	@commands.command(name="tstatus", aliases=["Tstatus"])
+	@commands.has_permissions(administrator=True)
+	async def tstatus(self, ctx):
+		task_status = 'Running' if self.partner_live_notification.is_running() else 'Paused'
+		notif_status = 'On' if self.__send_notify else 'Off'
+
+		embed = discord.Embed(title="Twitch Affiliate Task")
+		embed.add_field(name='Task Status', value=task_status)
+		embed.add_field(name='Notifications', value=notif_status)
+		embed.set_thumbnail(url=TWITCH_LOGO)
+
+		await ctx.send(embed=embed)
 
 
 	@commands.command(name="listparceiros", aliases=["Listparceiros", "Lsparceiros", "lsparceiros", "Lsp", "lsp"])

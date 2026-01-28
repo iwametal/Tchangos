@@ -15,6 +15,8 @@ REACTION = {
 	'success': '✅',
 }
 
+TWITCH_LOGO = "https://images.seeklogo.com/logo-png/25/1/twitch-tv-logo-png_seeklogo-259676.png"
+
 
 ###
 
