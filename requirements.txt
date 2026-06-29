@@ -1,0 +1,9 @@
+discord>=2.3.2,<3.0.0
+jishaku>=2.6.0,<3.0.0
+twitchapi>=4.5.0,<5.0.0
+pydantic>=2.11.7,<3.0.0
+google-genai>=1.56.0,<2.0.0
+configparser>=7.2.0,<8.0.0
+googletrans>=4.0.2,<5.0.0
+fluent-runtime>=0.4.0,<0.5.0
+pymongo[srv]>=4.13.2,<5.0.0
