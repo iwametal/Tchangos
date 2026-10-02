@@ -66,7 +66,8 @@ class Partners(commands.Cog):
 				return True
 			
 		except Exception:
-			self.bot.logger.exception('Unable to check user')
+			return False
+			# self.bot.logger.exception('Unable to check user')
 
 		return False
 
